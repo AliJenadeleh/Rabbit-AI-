@@ -5,4 +5,10 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Classes\Global\" />
+    <Folder Include="Classes\Storage\" />
+    <Folder Include="Storage\" />
+  </ItemGroup>
+
 </Project>
