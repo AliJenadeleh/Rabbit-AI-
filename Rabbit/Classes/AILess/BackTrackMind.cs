@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Rabbit.Classes.AI
+namespace Rabbit.Classes.AILess
 {
     class BackTrackMind
     {

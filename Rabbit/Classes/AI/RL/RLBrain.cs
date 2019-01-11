@@ -7,42 +7,30 @@ namespace Rabbit.Classes.AI.RL
 {
     public class RLBrain
     {
-        private readonly string target;
-        private char[] Program;
-        private int ProgramSize;//, CommandsLength;
-        private readonly int ProgramMaxSize
-                            , ProgramSizeStep
-                            , MaxLoopSize
-                            , Treshold
-                            , MemorySize;
-        //private readonly string commands; // scored commands
-        private BrainFuck bf;
+        readonly string Target;
+        int ProgramSize, ProgramSizeStep;
 
-        public RLBrain(string Target="hi")
+        public RLBrain(string Target)
         {
-            target = Target;
-            Treshold = 25;
-            ProgramSize = 25;
-            ProgramSizeStep = 25;
-            ProgramMaxSize = 500;
-            //MaxLoopSize = 100;
-            MemorySize = (target.Length * 10) + Treshold;
-            MaxLoopSize = 100;
-            //commands = "<>+-.[]"; 
-            // without input
-            //commands = "<>+-.,[]"; // with input
-            Program = new char[ProgramSize];
-            bf = new BrainFuck();
+            this.Target = Target;
+            ProgramSize = 75;
+            ProgramSizeStep = 15;
         }
 
-        public bool Start()
+        public bool _Start()
         {
-            // Action List
-            // Select Action
-
 
 
             return false;
         }
+
+        public string Start()
+        {
+
+
+
+            return string.Empty;
+        }
+
     }
 }
