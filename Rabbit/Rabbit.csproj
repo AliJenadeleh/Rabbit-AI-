@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Classes\AI\NeuralNetwork\" />
     <Folder Include="Classes\Global\" />
-    <Folder Include="Classes\Storage\" />
     <Folder Include="Storage\" />
   </ItemGroup>
 
