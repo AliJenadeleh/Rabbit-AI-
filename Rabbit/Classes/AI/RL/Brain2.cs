@@ -11,15 +11,19 @@ namespace Rabbit.Classes.AI.RL
 {
     public class Brain2
     {
+        private const int MUL = 10000;
         private readonly string Target;
         private readonly int TargetLength;
+        private readonly bool Verbose;
         private int ProgramMaxLength;
         private int ProgramInitLegth;
         private int ProgramMinLength;
+        private int ProgramAvgLength;
         private int ProgramLengthInc;
         private int ProgramLength;
         private int InitPlusScore;
         private int ErrorPosition;
+        private Random rnd = new Random();
 
         private List2 Actions;
         //private History2 History;
@@ -41,11 +45,13 @@ namespace Rabbit.Classes.AI.RL
                 else if (tmp < Min)
                     Min = tmp;
             }
-            int avg = sum / TargetLength;
 
+            int avg = sum / TargetLength;
+            ProgramAvgLength = avg;
             ProgramMaxLength = sum;
             ProgramLengthInc = avg / 2;
-            ProgramLength = ProgramInitLegth = avg + ProgramLengthInc;
+            //ProgramLength = ProgramInitLegth = avg + ProgramLengthInc;
+            ProgramLength = ProgramInitLegth = avg / 2;
             ProgramMinLength = Min;
             InitPlusScore = Max;
         }// InitVars();
@@ -54,35 +60,32 @@ namespace Rabbit.Classes.AI.RL
         {
             Actions = new List2();
 
-            Actions.Add(new Cell2(StaticsAndDefaults.OperatorInc, InitPlusScore));
-            Actions.Add(new Cell2(StaticsAndDefaults.OperatorDec, ProgramInitLegth / 2));
-            Actions.Add(new Cell2(StaticsAndDefaults.OperatorOutput, TargetLength));
+            Actions.Add(new Cell2(StaticsAndDefaults.OperatorBegin, InitPlusScore   * MUL));
+            Actions.Add(new Cell2(StaticsAndDefaults.OperatorEnd, (TargetLength / 2) * MUL));
+            Actions.Add(new Cell2(StaticsAndDefaults.OperatorRight, TargetLength * MUL ));
+            Actions.Add(new Cell2(StaticsAndDefaults.OperatorLeft, (TargetLength ) * MUL ));
+            Actions.Add(new Cell2(StaticsAndDefaults.OperatorInc, (ProgramInitLegth / 2) * MUL));
+            Actions.Add(new Cell2(StaticsAndDefaults.OperatorDec, (ProgramInitLegth / 4) * MUL));
+            Actions.Add(new Cell2(StaticsAndDefaults.OperatorOutput, TargetLength * MUL));
             //Actions.Add(new Cell2(StaticsAndDefaults.OperatorInput, 0));
-            Actions.Add(new Cell2(StaticsAndDefaults.OperatorBegin,TargetLength * 2));
-            Actions.Add(new Cell2(StaticsAndDefaults.OperatorRight, TargetLength * 2));
-            Actions.Add(new Cell2(StaticsAndDefaults.OperatorLeft, TargetLength));
-            Actions.Add(new Cell2(StaticsAndDefaults.OperatorEnd, TargetLength));
+            //Actions.ReOrder();
         }//InitActionList();
-        /*
-        private void InitHistory()
-        {
-            //History = new History2();
-        }
-        */
+     
         private void InitProgram()
         {
-            Program = new AIProrgam2(Target, ProgramInitLegth, ProgramLengthInc, ProgramMaxLength);
+            Program = new AIProrgam2(Target, ProgramInitLegth, ProgramLengthInc, ProgramMaxLength,InitPlusScore,ProgramAvgLength);
         }
 
         private void InitEmulator()
         {
-            emulator = new Emulator(Verbose: false,ShowOutput:false);
+            emulator = new Emulator(Verbose: false,ShowOutput:false,MaxLoopRun:TargetLength * ProgramLengthInc);
         }
         #endregion
 
     
-        public Brain2(string Target)
+        public Brain2(string Target,bool Verbose = false)
         {
+            this.Verbose = Verbose;
             this.Target = Target;
             this.TargetLength = Target.Length;
 
@@ -100,25 +103,31 @@ namespace Rabbit.Classes.AI.RL
         {
             // add thinking 
 
-            var query = from a in Actions.Actions
-                        where !history.Exists(a) &&
-                        Program.CanAddThis(Position,a)
-                        orderby a.Score descending
-                        select a;
+            //if (history.Count > 0 || Position == 0)
+            //{
 
-            /*
-            for(int i=0;i<query.Count();i++)
-            {
-                cell = query.Skip(i).FirstOrDefault<Cell2>();
+                var query = from a in Actions.Actions
+                            where !history.Exists(a) &&
+                            Program.CanAddThis(Position, a)
+                            orderby a.Score descending
+                            select a;
 
-                if (cell != null && 
-                    Program.CanAddThis(Position, cell))
-                    return cell;
-            }// for
+                return query.FirstOrDefault<Cell2>();
+            //}
+            //else
+            //{
+            //    var tmplist = Actions.Clone();
+            //    Cell2 tag;
+            //    do
+            //    {
+            //        if (tmplist.Count == 1) return tmplist[0];
 
-            */
-
-            return query.FirstOrDefault<Cell2>();
+            //        int inx = rnd.Next(0, tmplist.Count);
+            //        tag = tmplist[inx];
+            //        tmplist.Remove(inx);
+            //    } while (!Program.CanAddThis(Position, tag));
+            //    return tag;
+            //}
         }//TakeAnAction();
 
         private bool _Start(int Position)
@@ -147,20 +156,29 @@ namespace Rabbit.Classes.AI.RL
                         //Console.WriteLine($"<:{Program.LeftCounter} | >:{Program.RightCounter}");
                         var result = emulator.TryToEmulate(Program, Target);
 
-
+                        
                         if (result == EResult.Match)
                             return true;
                         else if(result == EResult.NotMatch)
                         {
-                            Actions.Reward(cell, 1, Program.ActionCount(cell.Tag));
+                            int any = emulator.AnyInOutPut(Target);
+                            if(any > 0)
+                            {
+                                Actions.Reward(Program,1);
+                            }
+                            else
+                            {
+                                Actions.Reward(Program, -1);
+                            }
                             if (_Start(Position + 1))
                             {
                                 return true;
                             }// if(_start)
                         }else if (result == EResult.Error)
                         {
+                            Actions.Reward(Program, -1);
 
-                            if(emulator.LocalErrorType == ErrorType.MemoryOutOfRange)
+                            if (emulator.LocalErrorType == ErrorType.MemoryOutOfRange)
                             {
                                 ErrorPosition = emulator.ProgramIndex;
                                 if (ErrorPosition < Position) return false;

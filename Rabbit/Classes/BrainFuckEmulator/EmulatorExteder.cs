@@ -17,7 +17,7 @@ namespace Rabbit.Classes.BrainFuckEmulator
         {
             return Source.IndexOf(Target) >= 0;
         }
-        public static EResult TryToEmulate(this Emulator emu,AIProrgam2 Program,string Target)
+        public static EResult TryToEmulate(this Emulator emu, AIProrgam2 Program, string Target,bool Verbose = false)
         {
             string script = Program.GetProgram();
             string src;
@@ -47,22 +47,27 @@ namespace Rabbit.Classes.BrainFuckEmulator
             }
             catch(Exception ex)
             {
-                var color = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(Program.CounterDetails());
-                Console.WriteLine($"Error on TryToEmulate {script}");
-                Console.WriteLine(ex.Message);
-                Console.ForegroundColor = color;
+                    var color = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                if (Verbose)
+                {
+                    Console.WriteLine(Program.CounterDetails());
+                    Console.WriteLine($"Error on TryToEmulate {script}");
+                    Console.WriteLine(ex.Message);
+
+                }
                 src = emu.ToString();
                 if (HasTarget(src, Target))
                 {
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine($"Match Found with error");
                     Console.WriteLine(src);
-                    Console.ForegroundColor = color;
+                    Console.ReadKey();
+                    Console.WriteLine("Press any key to continue.");
                     return EResult.MatchWithError;
                 }
 
+                Console.ForegroundColor = color;
                 return EResult.Error;
             }
             

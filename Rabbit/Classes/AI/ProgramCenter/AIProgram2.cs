@@ -19,16 +19,21 @@ namespace Rabbit.Classes.AI.ProgramCenter
 
         #region Vars
         private List<char> program;
-        private Regex regex;
+        //private Regex regex;
+        private int MaxValue;
+        private string PreFix;
         #endregion
 
-        public AIProrgam2(string Target, int Size, int Alpha, int MaxSize)
+        public AIProrgam2(string Target, int Size, int Alpha, int MaxSize,int MaxValue,int InitInc)
         {
             program = new List<char>();
             this.Alpha = Alpha;
             this.MaxSize = MaxSize;
             this.Size = Size;
-            BeginCounter = EndCounter = 0;
+            OutputCounter = BeginCounter = EndCounter = 0;
+            this.MaxValue = MaxValue + Alpha;
+            this.PreFix = "".PadLeft(InitInc,'+');
+            IncCounter = Target.Length;
         }
 
         #region Methods
@@ -183,6 +188,8 @@ namespace Rabbit.Classes.AI.ProgramCenter
             return BeginCounter >= EndCounter &&
                     Size > Index &&
                     StaticsAndDefaults.MaxNestLoop > BeginCounter &&
+                    program[Index - 1] != StaticsAndDefaults.OperatorBegin &&
+                    program[Index - 1] != StaticsAndDefaults.OperatorEnd &&
                     Index < (Size - 3);
         }
 
@@ -208,26 +215,26 @@ namespace Rabbit.Classes.AI.ProgramCenter
         public bool CanAddRight(int Index)
         {
             if (Index < Size - 1)
-                if (Index > 0 && StaticsAndDefaults.OperatorLeft != program[Index - 1])
+                if (Index > 0 && RightCounter < Size / 3 && StaticsAndDefaults.OperatorLeft != program[Index - 1])
                     return true;
             return false;
         }
 
         public bool CanAddPlus(int Index)
         {
-            return !((Index > 0 && StaticsAndDefaults.OperatorDec != program[Index - 1]) && Index >= Size - 1);
+            return (Index > 0 && StaticsAndDefaults.OperatorDec != program[Index - 1]);
         }
 
         public bool CanAddSub(int Index)
         {
             return 1 < Index &&
-                StaticsAndDefaults.OperatorInc != program[Index - 1] &&
-                Index < Size - 1;
+                StaticsAndDefaults.OperatorInc != program[Index - 1] ;
         }
 
         public bool CanAddPrint(int Index)
         {
-            return (Index > 0);
+            //Index > Size / 2  && 
+            return (Index > 0 && this[Index - 1] != StaticsAndDefaults.OperatorOutput);
         }
 
         private bool OkCounters()
@@ -249,7 +256,7 @@ namespace Rabbit.Classes.AI.ProgramCenter
 
         public bool IsOkToRun()
         {
-            return OkCounters() && OkPatterns();
+            return OkCounters() && OkPatterns() && OutputCounter > 0 && BeginCounter > 0;
         }
 
         public void Verbose()
@@ -279,7 +286,7 @@ namespace Rabbit.Classes.AI.ProgramCenter
         public int InputCounter { get; private set; }
         public int Count => program.Count;
         public int Size { get; private set; }
-        public string GetProgram() => new string(program.ToArray());
+        public string GetProgram() => $"{PreFix}{new string(program.ToArray())}";
         public char this[int Index] { get => program[Index]; }
         public Cell2 LastAction { get; private set; }
         #endregion

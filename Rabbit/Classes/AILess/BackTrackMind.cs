@@ -10,9 +10,9 @@ namespace Rabbit.Classes.AILess
         private char[] Program;
         private readonly string target;
         private int ProgramSize,CommandsLength;
-        private readonly int ProgramMaxSize
-                            ,ProgramSizeStep
-                            ,MaxLoopSize
+        private readonly int ProgramMaxSize,
+                             ProgramSizeStep,
+                             MaxLoopSize
                             ,Treshold 
                             ,MemorySize;
         private readonly string commands;

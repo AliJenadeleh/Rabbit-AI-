@@ -35,8 +35,9 @@ namespace Rabbit
         {
             Console.WriteLine("RL-Brain start....");
                 var rlb = new Brain2(target);
+                //var rlb = new Brain2(target,true );//With Verbose
             //return rlb.ShadowStart();
-                return rlb.Start();
+            return rlb.Start();
         }
 
         private static void Run()

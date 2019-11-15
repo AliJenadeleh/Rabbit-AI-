@@ -279,6 +279,16 @@ namespace Rabbit.Classes.BrainFuckEmulator
 
         #region Public
 
+        public int AnyInOutPut(string Target)
+        {
+            int result = 0;
+            string tmp = this.ToString();
+            for (int i = 0; i < Target.Length; i++)
+                if (tmp.IndexOf(Target[i]) >= 0)
+                    result++;
+            return result;
+        }
+
         public void Start(string Program)
         {
             Init(Program);

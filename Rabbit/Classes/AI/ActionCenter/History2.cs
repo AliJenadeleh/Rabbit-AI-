@@ -44,6 +44,8 @@ namespace Rabbit.Classes.AI.ActionCenter
 
         public void Clear() => history.Clear();
 
+        public int Count => history.Count;
+
         public Cell2 LastAction()
         {
             if(history.Count > 0)
