@@ -7,33 +7,52 @@ using System.Text.RegularExpressions;
 
 namespace Rabbit.Classes.AI.ProgramCenter
 {
-    public class AIProrgam2: IEumulateableProgram
+    public class AIProgram3: IEumulateableProgram
     {
         #region Consts
-        private const int EachOperationSize = 5;
+        //private const int EachOperationSize = 5;
         private const string Pattern_Loop_UseLess = @"\[+[.><]*\]+";
         private const string Pattern_Loop_UseLess2 = @"\[\.*\++\.*\]";
         private const string Pattern_Loop_UseLess3 = @"\[\.*\-+\.*\]";
-        private readonly int Alpha, MaxSize;
+        private readonly int SizeInc;
+        private readonly bool ShouldHaveLoops;
         #endregion
 
         #region Vars
         private List<char> program;
-        //private Regex regex;
-        private int MaxValue;
-        private string PreFix;
+        private Regex regex;
+        //private int MaxValue;
+        private string PreFix = "";
         #endregion
 
-        public AIProrgam2(string Target, int Size, int Alpha, int MaxSize,int MaxValue,int InitInc)
+        #region Fields
+        public int BeginCounter { get; private set; }
+        public int EndCounter { get; private set; }
+        public int RightCounter { get; private set; }
+        public int LeftCounter { get; private set; }
+        public int IncCounter { get; private set; }
+        public int DecCounter { get; private set; }
+        public int OutputCounter { get; private set; }
+        public int InputCounter { get; private set; }
+        public int Count => program.Count;
+        public int Size { get; private set; }
+        public string GetProgram() => $"{PreFix}{new string(program.ToArray())}";
+        public string CounterDetails() =>
+          $"<:{LeftCounter} >:{RightCounter} , [ : {BeginCounter}  ] : {EndCounter} , + : {IncCounter} - : {DecCounter} , . : {OutputCounter} , :{InputCounter}";
+        public char this[int Index] { get => program[Index]; }
+        public Cell2 LastAction { get; private set; }
+        #endregion
+        public AIProgram3(string Target, int Size, int SizeInc,bool ShouldHaveLoops = false)
         {
             program = new List<char>();
-            this.Alpha = Alpha;
-            this.MaxSize = MaxSize;
+            this.SizeInc = SizeInc;
             this.Size = Size;
-            OutputCounter = BeginCounter = EndCounter = 0;
-            this.MaxValue = MaxValue + Alpha;
-            this.PreFix = "".PadLeft(InitInc,'+');
-            IncCounter = Target.Length;
+            this.ShouldHaveLoops = ShouldHaveLoops;
+             OutputCounter = BeginCounter = 
+                EndCounter = InputCounter =
+                LeftCounter = RightCounter =
+                DecCounter = IncCounter = 0;
+            //this.PreFix = "".PadLeft(InitInc, '+');
         }
 
         #region Methods
@@ -44,7 +63,7 @@ namespace Rabbit.Classes.AI.ProgramCenter
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("***************Size Change*********************");
             Console.WriteLine($"Current Size : {Size}");
-            Size += Alpha;
+            Size += SizeInc;
             Console.WriteLine($"New Size : {Size}");
             Console.WriteLine("***************Size Change*********************");
             Console.ForegroundColor = color;
@@ -186,12 +205,12 @@ namespace Rabbit.Classes.AI.ProgramCenter
         public bool CanAddBegin(int Index)
         {
             if (Index > 0)
-            return BeginCounter >= EndCounter &&
-                    Size > Index &&
-                    StaticsAndDefaults.MaxNestLoop > BeginCounter &&
-                    program[Index - 1] != StaticsAndDefaults.OperatorBegin &&
-                    program[Index - 1] != StaticsAndDefaults.OperatorEnd &&
-                    Index < (Size - 3);
+                return BeginCounter >= EndCounter &&
+                        Size > Index &&
+                        StaticsAndDefaults.MaxNestLoop > BeginCounter &&
+                        program[Index - 1] != StaticsAndDefaults.OperatorBegin &&
+                        program[Index - 1] != StaticsAndDefaults.OperatorEnd &&
+                        Index < (Size - 3);
 
             return BeginCounter >= EndCounter &&
                     Size > Index &&
@@ -228,13 +247,15 @@ namespace Rabbit.Classes.AI.ProgramCenter
 
         public bool CanAddPlus(int Index)
         {
-            return (Index > 0 && StaticsAndDefaults.OperatorDec != program[Index - 1]);
+            if(Index > 0)
+             return (StaticsAndDefaults.OperatorDec != program[Index - 1]);
+            return true;
         }
 
         public bool CanAddSub(int Index)
         {
             return 1 < Index &&
-                StaticsAndDefaults.OperatorInc != program[Index - 1] ;
+                StaticsAndDefaults.OperatorInc != program[Index - 1];
         }
 
         public bool CanAddPrint(int Index)
@@ -253,7 +274,7 @@ namespace Rabbit.Classes.AI.ProgramCenter
             string script = GetProgram();
             return !Regex.IsMatch(script, Pattern_Loop_UseLess) &&
                 !Regex.IsMatch(script, Pattern_Loop_UseLess2) &&
-                !Regex.IsMatch(script,Pattern_Loop_UseLess3);
+                !Regex.IsMatch(script, Pattern_Loop_UseLess3);
             /*
             regex = new Regex(Pattern_Loop_UseLess);
             return !regex.IsMatch(GetProgram()) ;
@@ -262,7 +283,10 @@ namespace Rabbit.Classes.AI.ProgramCenter
 
         public bool IsOkToRun()
         {
-            return OkCounters() && OkPatterns() && OutputCounter > 0 && BeginCounter > 0;
+            if(ShouldHaveLoops)
+                return OkCounters() && OkPatterns() && OutputCounter > 0 && BeginCounter > 0;
+
+            return OkCounters() && OkPatterns() && OutputCounter > 0;
         }
 
         public void Verbose()
@@ -275,26 +299,6 @@ namespace Rabbit.Classes.AI.ProgramCenter
             Console.WriteLine("***************VE*********************");
             Console.ForegroundColor = color;
         }
-
-        public string CounterDetails() =>
-          $"<:{LeftCounter} >:{RightCounter} , [ : {BeginCounter}  ] : {EndCounter} , + : {IncCounter} - : {DecCounter} , . : {OutputCounter} , :{InputCounter}";        
-
-        #endregion
-
-        #region Fields
-        public int BeginCounter { get; private set; }
-        public int EndCounter { get; private set; }
-        public int RightCounter { get; private set; }
-        public int LeftCounter { get; private set; }
-        public int IncCounter { get; private set; }
-        public int DecCounter { get; private set; }
-        public int OutputCounter { get; private set; }
-        public int InputCounter { get; private set; }
-        public int Count => program.Count;
-        public int Size { get; private set; }
-        public string GetProgram() => $"{PreFix}{new string(program.ToArray())}";
-        public char this[int Index] { get => program[Index]; }
-        public Cell2 LastAction { get; private set; }
-        #endregion
     }
+    #endregion 
 }

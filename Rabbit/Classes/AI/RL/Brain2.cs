@@ -11,7 +11,7 @@ namespace Rabbit.Classes.AI.RL
 {
     public class Brain2
     {
-        private const int MUL = 10000;
+        private const int MUL = 10;
         private readonly string Target;
         private readonly int TargetLength;
         private readonly bool Verbose;
@@ -50,8 +50,10 @@ namespace Rabbit.Classes.AI.RL
             ProgramAvgLength = avg;
             ProgramMaxLength = sum;
             ProgramLengthInc = avg / 2;
+            //ProgramLength = ProgramInitLegth = sum + Target.Length;
             //ProgramLength = ProgramInitLegth = avg + ProgramLengthInc;
-            ProgramLength = ProgramInitLegth = avg / 2;
+            ProgramLength = 150 - ProgramLengthInc;//  ProgramInitLegth = avg / 2;
+            ProgramInitLegth = 150 - ProgramLengthInc; // avg / 2;
             ProgramMinLength = Min;
             InitPlusScore = Max;
         }// InitVars();
@@ -240,7 +242,7 @@ namespace Rabbit.Classes.AI.RL
             if(_Start(0))
             {
                 sw.Stop();
-                var cell = new StorageCell() {Script = Program.GetProgram(),Target = Target ,MS = sw.ElapsedMilliseconds};
+                var cell = new StorageCell() {Script = Program.GetProgram(),Target = Target ,MS = sw.ElapsedMilliseconds,BrainVersion=2};
                 var stg = new StorageDB();
                 stg.Add(cell);
                 stg.Save();

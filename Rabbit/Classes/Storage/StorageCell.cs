@@ -10,5 +10,6 @@ namespace Rabbit.Classes.Storage
         public string Target { get; set; }
         public string Script { get; set; }
         public long MS { get; set; }
+        public int BrainVersion { get; set; }
     }
 }
