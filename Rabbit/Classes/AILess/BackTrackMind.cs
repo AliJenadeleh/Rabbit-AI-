@@ -3,16 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Rabbit.Classes.AI
+namespace Rabbit.Classes.AILess
 {
     class BackTrackMind
     {
         private char[] Program;
         private readonly string target;
         private int ProgramSize,CommandsLength;
-        private readonly int ProgramMaxSize
-                            ,ProgramSizeStep
-                            ,MaxLoopSize
+        private readonly int ProgramMaxSize,
+                             ProgramSizeStep,
+                             MaxLoopSize
                             ,Treshold 
                             ,MemorySize;
         private readonly string commands;

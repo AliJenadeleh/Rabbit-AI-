@@ -6,7 +6,7 @@ namespace Rabbit.Classes.BF
 {
     public class LoopCounterOutOfRange:Exception
     {
-        public LoopCounterOutOfRange(int counter = -1):base($"Loop counter out of range [{counter}].")
+        public LoopCounterOutOfRange(int counter = -1) :base($"Loop counter out of range [{counter}].")
         {
             LoopCounter = counter;
         }
