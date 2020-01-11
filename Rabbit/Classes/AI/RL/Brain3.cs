@@ -21,6 +21,7 @@ namespace Rabbit.Classes.AI.RL
             Actions = new List2();
             Actions.Add(new Cell2(StaticsAndDefaults.OperatorInc, Target.Length));
             Actions.Add(new Cell2(StaticsAndDefaults.OperatorOutput, Target.Length));
+            Actions.Add(new Cell2(StaticsAndDefaults.OperatorDec, Target.Length / 2));
             //Actions.Add(new Cell2(StaticsAndDefaults.OperatorDec, Target.Length));
         }
 

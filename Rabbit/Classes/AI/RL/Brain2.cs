@@ -52,8 +52,9 @@ namespace Rabbit.Classes.AI.RL
             ProgramLengthInc = avg / 2;
             //ProgramLength = ProgramInitLegth = sum + Target.Length;
             //ProgramLength = ProgramInitLegth = avg + ProgramLengthInc;
-            ProgramLength = 150 - ProgramLengthInc;//  ProgramInitLegth = avg / 2;
-            ProgramInitLegth = 150 - ProgramLengthInc; // avg / 2;
+            // 150 -> 100
+            ProgramLength = 100 - ProgramLengthInc;//  ProgramInitLegth = avg / 2;
+            ProgramInitLegth = 100 - ProgramLengthInc; // avg / 2;
             ProgramMinLength = Min;
             InitPlusScore = Max;
         }// InitVars();

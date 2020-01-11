@@ -35,7 +35,7 @@ namespace Rabbit
         private static string AIMethod()
         {
             Console.WriteLine("RL-Brain start....");
-                var rlb = new Brain3(target);
+                var rlb = new Brain2(target);
                 //var rlb = new Brain2(target,true );//With Verbose
             //return rlb.ShadowStart();
             return rlb.Start();

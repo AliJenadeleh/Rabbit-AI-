@@ -34,10 +34,11 @@ namespace Rabbit.Classes.BrainFuckEmulator
         public const int OperatorBeginInit = 1070;
         public const int OperatorIncInit = 1080;
 
-        public const int MaxNestLoop = 3;
+        public const int MaxNestLoop = 2;
         public const int MaxLoopRun = 500;
         public const bool DefaultVerbose = true;
         public const bool DefaultShowOutput = true;
         #endregion
     }
+
 }
